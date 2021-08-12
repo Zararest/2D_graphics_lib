@@ -1,12 +1,12 @@
-obj_main = main.o Render.o Matrix.o
+obj_main = main.o Render.o Vector_lib.o
 
 libs_main = -lsfml-graphics -lsfml-window -lsfml-system
 
-Render.o: ../Render.cpp
-	g++ -c ../Render.cpp
+Render.o: ../visual_lib/Render.cpp
+	g++ -c ../visual_lib/Render.cpp
 
-Matrix.o: ../vector_lib/Matrix.cpp
-	g++ -c ../vector_lib/Matrix.cpp
+Vector_lib.o: ../vector_lib/Vector_lib.cpp
+	g++ -c ../vector_lib/Vector_lib.cpp
 
 main.o: ../main.cpp
 	g++ -c ../main.cpp

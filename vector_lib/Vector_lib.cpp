@@ -2,7 +2,7 @@
 
 Matrix::Matrix(int vertical_size, int horizontal_size, float* numbers){//копирует данные из массива
 
-    printf("Конструктор матрицы по массиву\n\n");
+    //printf("Конструктор матрицы по массиву\n\n");
 
     assert((vertical_size >= 0) && (horizontal_size >= 0));
 
@@ -15,6 +15,7 @@ Matrix::Matrix(int vertical_size, int horizontal_size, float* numbers){//коп�
         memcpy(data, numbers, horizontal_size * vertical_size * sizeof(float));
     } else{
 
+        printf("WARNING: in constructor Matrix(int, int, float*) float pointer is NULL\n");
         data = (float*)calloc(horizontal_size * vertical_size, sizeof(float));
         rows_count = vertical_size;
         columns_count = horizontal_size;
@@ -132,7 +133,7 @@ Matrix::Matrix(FILE* input){
 
 Matrix::Matrix(const Matrix& old_obj){
 
-    printf("Конструктор глубокого копирования\n\n");
+    //printf("Конструктор глубокого копирования\n\n");
 
     data = (float*)calloc(old_obj.rows_count * old_obj.columns_count, sizeof(float));
 
@@ -144,7 +145,7 @@ Matrix::Matrix(const Matrix& old_obj){
 
 Matrix::Matrix(Matrix&& old_obj){
 
-    printf("Конструктор перемещения\n\n");
+    //printf("Конструктор перемещения\n\n");
 
     data = old_obj.data;
     rows_count = old_obj.rows_count;
@@ -352,7 +353,7 @@ void Matrix::transpose(){
 
 Matrix& Matrix::operator = (const Matrix& rv){
 
-    printf("Оператор присваивания lvalue = lvalue\n\n");
+    //printf("Оператор присваивания lvalue = lvalue\n\n");
 
     if (this == &rv){
 
@@ -371,7 +372,8 @@ Matrix& Matrix::operator = (const Matrix& rv){
 
 Matrix& Matrix::operator = (Matrix&& rv){
 
-    printf("Оператор присваивания перемещения lvalue = rvalue\n\n");
+    //printf("Оператор присваивания перемещения lvalue = rvalue\n\n");
+
     free(data);   //вроде без этого утечка памяти
     data = rv.data;
     rows_count = rv.rows_count;
@@ -420,7 +422,7 @@ Matrix operator * (const Matrix& L_matr, const Matrix& R_matr){
 
 Matrix operator * (float number, const Matrix& matr){
 
-    printf("Оператор число * матрица\n\n");
+    //printf("Оператор число * матрица\n\n");
 
     Matrix tmp_obj(matr.rows_count, matr.columns_count, (float)0);
 
@@ -434,14 +436,14 @@ Matrix operator * (float number, const Matrix& matr){
 
 Matrix operator * (const Matrix& matr, float number){
 
-    printf("Оператор матрица * число\n\n");
+    //printf("Оператор матрица * число\n\n");
 
     return number * matr;
 }
 
 Matrix operator + (const Matrix& L_matr, const Matrix& R_matr){
 
-    printf("Оператор +\n\n");
+    //printf("Оператор +\n\n");
 
     assert((L_matr.rows_count == R_matr.rows_count) && (L_matr.columns_count == R_matr.columns_count));
 
@@ -461,7 +463,7 @@ Matrix operator + (const Matrix& L_matr, const Matrix& R_matr){
 
 Matrix operator - (const Matrix& L_matr, const Matrix& R_matr){
 
-    printf("Оператор -\n\n");
+    //printf("Оператор -\n\n");
 
     assert((L_matr.rows_count == R_matr.rows_count) && (L_matr.columns_count == R_matr.columns_count));
 
@@ -529,7 +531,7 @@ bool could_be_mult(const Matrix& L_matr, const Matrix& R_matr){
 
 Vector::Vector(float x , float y):
 
-    Matrix(2, 1, (float)0)
+    Matrix(2, 1, -1)
 {
     data[0] = x;
     data[1] = y;
@@ -537,7 +539,7 @@ Vector::Vector(float x , float y):
 
 Vector::Vector(float x , float y, float z):
 
-    Matrix(3, 1, (float)0)
+    Matrix(3, 1, -1)
 {
     data[0] = x;
     data[1] = y;
@@ -560,7 +562,7 @@ Vector::Vector(Point& fir_point, Point& sec_point):
 
 Vector::~Vector(){
 
-    printf("destr\n");
+    //printf("destr\n");
 }
 
 float& Vector::operator [] (const int coordinate_number){
@@ -617,7 +619,7 @@ Vector operator * (const Vector& vectr, float number){
 
 Vector operator * (float number, const Vector& vectr){
 
-    Vector tmp(0, nullptr);
+    Vector tmp(0, -1);
     dynamic_cast<Matrix&>(tmp) = dynamic_cast<Matrix&>(const_cast<Vector&>(vectr)) * number;
 
     return tmp;
@@ -627,7 +629,7 @@ Vector operator + (const Vector& L_vectr, const Vector& R_vectr){
 
     printf("vector + vector\n");
 
-    Vector tmp(0, nullptr);
+    Vector tmp(0, -1);
     dynamic_cast<Matrix&>(tmp) = dynamic_cast<Matrix&>(const_cast<Vector&>(L_vectr)) + dynamic_cast<Matrix&>(const_cast<Vector&>(R_vectr));
 
     return tmp;
@@ -635,7 +637,7 @@ Vector operator + (const Vector& L_vectr, const Vector& R_vectr){
 
 Vector operator - (const Vector& L_vectr, const Vector& R_vectr){
 
-    Vector tmp(0, nullptr);
+    Vector tmp(0, -1);
     dynamic_cast<Matrix&>(tmp) = dynamic_cast<Matrix&>(const_cast<Vector&>(L_vectr)) - dynamic_cast<Matrix&>(const_cast<Vector&>(R_vectr));
     
     return tmp;
