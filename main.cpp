@@ -3,9 +3,13 @@
 #include <math.h>
 #include <cassert>
 #include <random> 
+#include <filesystem>
+#include <string>
+#include <iostream>
 
 #define HOR_SIZE 1200
 #define VERT_SIZE 700
+
 
 Vector func(Vector tmp){
 
@@ -14,7 +18,7 @@ Vector func(Vector tmp){
     return cur_vector;
 }
 
-int main(){
+int main(){ 
 
     std::mt19937 mersenne(static_cast<unsigned int>(time(0))); 
 
@@ -46,9 +50,7 @@ int main(){
     while (new_window.check_open() == true){
 
         new_window.hold_frame();
-        count++;
+
         new_window.check_event();
     }
-    
-    printf("count = %i\n", count);
 }

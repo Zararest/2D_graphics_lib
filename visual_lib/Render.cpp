@@ -9,11 +9,10 @@ Render::Render(int horizontal_size, int vertical_size):
     screen(),
     sprite()
 {
-
     vertical_window_size = vertical_size;
     horizontal_window_size = horizontal_size;
     frame_time = -1;
-    time_of_last_frame = 0;
+    time_of_last_frame = clock();
 
     in_focus = true;
 
@@ -29,40 +28,7 @@ Render::~Render(){
         window.close();
     }
     
-    printf("counter = %i\n", COUNTER);
     delete screen_pixels;
-}
-
-void Render::resize_pixels_arr(int new_hor_size, int new_vert_size){
-
-    sf::Uint8* tmp_pointer = nullptr;
-    sf::Uint8* new_pixels = new sf::Uint8[new_hor_size * new_vert_size * 4];
-    assert(new_pixels != nullptr);
-
-    for (int y = 0; y < new_vert_size; y++){
-
-        for (int x = 0; x < new_hor_size; x++){
-
-            if ((y < vertical_window_size) && (x < horizontal_window_size)){
-
-                new_pixels[(y * new_hor_size + x) * 4 + 0] = screen_pixels[(y * horizontal_window_size + x) * 4 + 0];
-                new_pixels[(y * new_hor_size + x) * 4 + 1] = screen_pixels[(y * horizontal_window_size + x) * 4 + 1];
-                new_pixels[(y * new_hor_size + x) * 4 + 2] = screen_pixels[(y * horizontal_window_size + x) * 4 + 2];
-                new_pixels[(y * new_hor_size + x) * 4 + 3] = screen_pixels[(y * horizontal_window_size + x) * 4 + 3];
-            } else{
-                
-                new_pixels[(y * new_hor_size + x) * 4 + 0] = 0;
-                new_pixels[(y * new_hor_size + x) * 4 + 1] = 0;
-                new_pixels[(y * new_hor_size + x) * 4 + 2] = 0;
-                new_pixels[(y * new_hor_size + x) * 4 + 3] = 255;
-            }
-        }
-    }
-
-    tmp_pointer = screen_pixels;
-    screen_pixels = new_pixels;
-
-    delete tmp_pointer;
 }
 
 void Render::check_event(){
@@ -79,13 +45,9 @@ void Render::check_event(){
 
     if (cur_event.type == sf::Event::Resized){
 
-        //this->resize_pixels_arr(cur_event.size.width, cur_event.size.height);
-        
-        printf("STOP\n");
-        system("rm ../main.cpp")
-        vertical_window_size = cur_event.size.height;
-        horizontal_window_size = cur_event.size.width;
-        COUNTER++;
+        float w = static_cast<float>(cur_event.size.width);
+        float h = static_cast<float>(cur_event.size.height);
+        window.setView(sf::View(sf::Vector2f(w / 2.0, h / 2.0), sf::Vector2f(w, h)));
     }
 
     if (cur_event.type == sf::Event::LostFocus){
@@ -124,65 +86,76 @@ void Render::new_frame(sf::Uint8* new_pixels, int size_x, int size_y){
         }
     }
 
-    screen.update(screen_pixels);
-    window.clear();
-    window.draw(sprite);
+    if (frame_time > 0){
 
-    /*if (frame_time > 0){
+        long int sleep_time = (long int)frame_time - (clock() - time_of_last_frame);
 
-        int sleep_time = 1 / frame_time * CLOCKS_PER_SEC - (clock() - time_of_last_frame);
+        if (sleep_time < 0){
 
-        if (sleep_time > 0){
+            screen.update(screen_pixels);
+            window.clear();
+            window.draw(sprite);
+            window.display();
 
-            sleep(sleep_time);
+            time_of_last_frame = clock();
         }
 
-        time_of_last_frame = clock();
-    }*/
+        
+    } else{
 
-    window.display();
+        screen.update(screen_pixels);
+        window.clear();
+        window.draw(sprite);
+        window.display();
+    }
 }
 
 void Render::new_fast_frame(sf::Uint8* new_pixels){
 
-    screen.update(new_pixels);
-    window.clear();
-    window.draw(sprite);
+    if (frame_time > 0){
 
-    /*if (frame_time > 0){
+        long int sleep_time = (long int)frame_time - (clock() - time_of_last_frame);
 
-        int sleep_time = 1 / frame_time * CLOCKS_PER_SEC - (clock() - time_of_last_frame);
+        if (sleep_time < 0){
 
-        if (sleep_time > 0){
+            screen.update(new_pixels);
+            window.clear();
+            window.draw(sprite);
+            window.display();
 
-            sleep(sleep_time);
+            time_of_last_frame = clock();
         }
+    } else{
 
-        time_of_last_frame = clock();
-    }*/
-
-    window.display();
+        screen.update(new_pixels);
+        window.clear();
+        window.draw(sprite);
+        window.display();
+    }
 }
 
 void Render::hold_frame(){
 
-    screen.update(screen_pixels);
-    window.clear();
-    window.draw(sprite);
-
-    /*if (frame_time > 0){
+    if (frame_time > 0){
 
         long int sleep_time = (long int)frame_time - (clock() - time_of_last_frame);
+        
+        if (sleep_time < 0){
 
-        if (sleep_time > 0){
-
-            sleep(sleep_time);
+            screen.update(screen_pixels);
+            window.clear();
+            window.draw(sprite);
+            window.display();
+            
+            time_of_last_frame = clock();
         }
+    } else{
 
-        time_of_last_frame = clock();
-    }*/
-
-    window.display();
+        screen.update(screen_pixels);
+        window.clear();
+        window.draw(sprite);
+        window.display();
+    }
 }
 
 bool Render::check_open(){
@@ -193,10 +166,8 @@ bool Render::check_open(){
 void Render::set_frame_rate(int frames_per_second){
 
     assert(frames_per_second != 0);
-    frame_time = 1 / frames_per_second * 1000;
-
-    printf("frame time = %lf\n", frame_time);
-
+    frame_time = 1 / ((double)frames_per_second) * (double)CLOCKS_PER_SEC;
+    
     time_of_last_frame = clock();
 }
 

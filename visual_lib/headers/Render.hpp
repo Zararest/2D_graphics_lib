@@ -1,6 +1,9 @@
 #include <SFML/Graphics.hpp>
 #include <ctime>
 #include <unistd.h>
+#include <thread>
+#include <chrono>
+
 #include "../../vector_lib/headers/Vector_lib.hpp"
 
 class Render{

@@ -562,7 +562,7 @@ Vector::Vector(Point& fir_point, Point& sec_point):
 
 Vector::~Vector(){
 
-    //printf("destr\n");
+    
 }
 
 float& Vector::operator [] (const int coordinate_number){
