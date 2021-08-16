@@ -1,14 +1,9 @@
 #include "visual_lib/headers/Render.hpp"
 #include "vector_lib/headers/Vector_lib.hpp"
-#include <math.h>
-#include <cassert>
-#include <random> 
-#include <filesystem>
-#include <string>
 #include <iostream>
 
-#define HOR_SIZE 1600
-#define VERT_SIZE 900
+#define HOR_SIZE 1200
+#define VERT_SIZE 500
 #define VECTOR_LEN 5
 
 Matrix ninety_degree_rotation(){
@@ -59,10 +54,8 @@ Point fractal(int iteration_number, int number_of_rotation, Point cur_base_point
 
 int main(){ 
 
-    std::mt19937 mersenne(static_cast<unsigned int>(time(0))); 
-
     Render new_window(HOR_SIZE, VERT_SIZE);
-    Point base_point(900, 500), end_point(900, 600);
+    Point base_point(900, 500);
     
     new_window.set_brush_color(sf::Color::White);
 

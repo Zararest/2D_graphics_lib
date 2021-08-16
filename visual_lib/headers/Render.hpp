@@ -50,8 +50,6 @@ public:
 
     bool check_open();
 
-    void resize_pixels_arr(int new_hor_size, int new_vert_size);
-
     void new_frame(sf::Uint8* new_pixels, int size_x, int size_y);
 
     void new_fast_frame(sf::Uint8* new_pixels);

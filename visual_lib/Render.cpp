@@ -65,25 +65,14 @@ void Render::new_frame(sf::Uint8* new_pixels, int size_x, int size_y){
 
     if (new_pixels != NULL){
 
-        for (int i = 0; i < vertical_window_size; i++){
+        delete screen_pixels;
 
-            for (int j = 0; j < horizontal_window_size; j++){
+        screen_pixels = new sf::Uint8[size_x * size_y * 4];
+        assert(screen_pixels != NULL);
+        memcpy(screen_pixels, new_pixels, size_x * size_y * 4 * sizeof(sf::Uint8));
 
-                if ((j <= size_x) || (i <= size_y)){
-                    
-                    screen_pixels[(i * horizontal_window_size + j) * 4 + 0] = new_pixels[(i * size_x + j) * 4 + 0];
-                    screen_pixels[(i * horizontal_window_size + j) * 4 + 1] = new_pixels[(i * size_x + j) * 4 + 1];
-                    screen_pixels[(i * horizontal_window_size + j) * 4 + 2] = new_pixels[(i * size_x + j) * 4 + 2];
-                    screen_pixels[(i * horizontal_window_size + j) * 4 + 3] = new_pixels[(i * size_x + j) * 4 + 3];
-                } else{
-
-                    screen_pixels[(i * horizontal_window_size + j) * 4 + 0] = 0;
-                    screen_pixels[(i * horizontal_window_size + j) * 4 + 1] = 0;
-                    screen_pixels[(i * horizontal_window_size + j) * 4 + 2] = 0;
-                    screen_pixels[(i * horizontal_window_size + j) * 4 + 3] = 0;
-                }
-            }  
-        }
+        vertical_window_size = size_y;
+        horizontal_window_size = size_x;
     }
 
     if (frame_time > 0){
