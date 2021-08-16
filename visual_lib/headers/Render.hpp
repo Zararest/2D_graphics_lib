@@ -66,6 +66,8 @@ public:
 
     sf::Color get_pixel_color(int x, int y);
 
+    bool on_canvas(Point& cur_point);
+
     void draw_line(Point& starting_point, Point& end_point, int width);
 
     void draw_line(Point& starting_point, Vector& line_vector, int width);

@@ -213,6 +213,17 @@ sf::Color Render::get_pixel_color(int x, int y){
     }
 }
 
+bool Render::on_canvas(Point& cur_point){
+
+    if ((cur_point[0] < horizontal_window_size) && (cur_point[0] > 0) && (cur_point[1] > 0) && (cur_point[1] < vertical_window_size)){
+
+        return true;
+    } else{
+
+        return false;
+    }
+}
+
 void Render::draw_line(Point& starting_point, Point& end_point, int width){
 
     assert(starting_point.length() == 2);
@@ -289,37 +300,52 @@ void Render::draw_segment(Point& starting_point, Point& end_point, int width){
     assert(end_point.length() == 2);
     assert(width > 0);
 
-    if ((starting_point[0] - end_point[0]) != 0){
+    if (this->on_canvas(starting_point) && this->on_canvas(end_point)){
+    
+        if ((starting_point[0] - end_point[0]) != 0){
 
-        float k = (end_point[1] - starting_point[1]) / (end_point[0] - starting_point[0]);
-        float b = end_point[1] - k * end_point[0];
-        
-        for (int cur_x = min(starting_point[0], end_point[0]); cur_x < max(starting_point[0], end_point[0]); cur_x++){
+            float k = (end_point[1] - starting_point[1]) / (end_point[0] - starting_point[0]);
+            float b = end_point[1] - k * end_point[0];
+            
+            for (int cur_x = min(starting_point[0], end_point[0]); cur_x < max(starting_point[0], end_point[0]); cur_x++){
 
-            for (int j = -(int)(width / 2); j <= (int)(width / 2); j++){
+                for (int j = -(int)(width / 2); j <= (int)(width / 2); j++){
 
-                if ((k * (cur_x + 1) + b -(int)(width / 2) >= 0) && (k * (cur_x + 1) + b + (int)(width / 2) <= vertical_window_size)){
+                    if ((k * (cur_x + 1) + b -(int)(width / 2) >= 0) && (k * (cur_x + 1) + b + (int)(width / 2) <= vertical_window_size)){
 
-                    set_pixel_color(cur_x, k * cur_x + b + j, brush_color);
+                        set_pixel_color(cur_x, k * cur_x + b + j, brush_color);
+                    }
+                }
+
+                if ((k * (cur_x + 1) + b <= 0) || (k * (cur_x + 1) + b >= vertical_window_size)){
+
+                    cur_x = horizontal_window_size;
                 }
             }
+        } else{
 
-            if ((k * (cur_x + 1) + b <= 0) || (k * (cur_x + 1) + b >= vertical_window_size)){
+            for (int cur_y = min(starting_point[1], end_point[1]); cur_y < max(starting_point[1], end_point[1]); cur_y++){
 
-                cur_x = horizontal_window_size;
+                if (width % 2 == 0){
+
+                    for (int j = -width / 2; j < width / 2; j++){
+
+                        set_pixel_color(starting_point[0] + j, cur_y, brush_color);
+                    }
+                } else{
+
+                    for (int j = -width / 2; j < width / 2 + 1; j++){
+
+                        set_pixel_color(starting_point[0] + j, cur_y, brush_color);
+                    }
+                }
             }
         }
     } else{
 
-        for (int cur_y = min(starting_point[1], end_point[1]); cur_y < max(starting_point[1], end_point[1]); cur_y++){
-
-            for (int j = -width / 2; j < width / 2; j++){
-
-                set_pixel_color(starting_point[0] + j, cur_y, brush_color);
-            }
-        }
+        printf("WARNING: draw_segment(): pixel outside the window\n\n");
     }
-
+ 
 }
 
 void Render::draw_segment(Point& starting_point, Vector& line_vector, int width){

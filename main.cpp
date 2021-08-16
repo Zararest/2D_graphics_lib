@@ -7,15 +7,54 @@
 #include <string>
 #include <iostream>
 
-#define HOR_SIZE 1200
-#define VERT_SIZE 700
+#define HOR_SIZE 1600
+#define VERT_SIZE 900
+#define VECTOR_LEN 5
 
+Matrix ninety_degree_rotation(){
 
-Vector func(Vector tmp){
+    float tmp_data[4] = {0, -1, 1, 0};
+    Matrix rotation_matr(2, 2, tmp_data);
 
-    Vector cur_vector(11, 22);
+    return rotation_matr;
+}
 
-    return cur_vector;
+Point draw_line(Point base_point, int number_of_rotation, Render& cur_canvas){
+
+    Matrix rot_matrix(2, 2, 1);
+    Vector vector_of_line((float)VECTOR_LEN, 0);
+    Point end_point(base_point);
+
+    for (int i = 0; i < number_of_rotation; i++){
+
+        rot_matrix = rot_matrix * ninety_degree_rotation();
+    }
+
+    vector_of_line = rot_matrix * vector_of_line ;
+    cur_canvas.draw_segment(base_point, vector_of_line, 1);
+
+    end_point[0] += vector_of_line[0];
+    end_point[1] += vector_of_line[1];
+
+    return end_point;
+}
+
+Point fractal(int iteration_number, int number_of_rotation, Point cur_base_point, Render& cur_canvas){
+
+    Point tmp_point(2, -1);
+    
+    number_of_rotation = number_of_rotation % 4;
+
+    if (iteration_number > 1){
+
+        tmp_point = fractal(iteration_number - 1, number_of_rotation, cur_base_point, cur_canvas);
+        tmp_point = fractal(iteration_number - 1, number_of_rotation + 1, tmp_point, cur_canvas);
+
+        return tmp_point;
+    } else{
+
+        return draw_line(cur_base_point, number_of_rotation, cur_canvas);
+    }
 }
 
 int main(){ 
@@ -23,29 +62,11 @@ int main(){
     std::mt19937 mersenne(static_cast<unsigned int>(time(0))); 
 
     Render new_window(HOR_SIZE, VERT_SIZE);
-    sf::Uint8* main_arr = new sf::Uint8[HOR_SIZE * VERT_SIZE * 4];
-    Point fir_point(300, 300), sec_point(50, 50), thrd_point(300, 200);
-    int count = 0, cur_number = 0;
+    Point base_point(900, 500), end_point(900, 600);
+    
+    new_window.set_brush_color(sf::Color::White);
 
-    for (int i = 0; i  < VERT_SIZE; i++){
-
-        for (int j = 0; j < HOR_SIZE; j++){
-            
-            cur_number = mersenne() % 255;
-
-            main_arr[(i * HOR_SIZE + j) * 4 + 0] = 255;
-            main_arr[(i * HOR_SIZE + j) * 4 + 1] = 255;
-            main_arr[(i * HOR_SIZE + j) * 4 + 2] = 255;
-            main_arr[(i * HOR_SIZE + j) * 4 + 3] = 255;
-        }
-    }
-
-    count = 0;
-    new_window.new_frame(main_arr, HOR_SIZE, VERT_SIZE);
-
-    new_window.draw_segment(fir_point, sec_point, 3);
-
-    new_window.set_frame_rate(30);
+    fractal(14, 0, base_point, new_window);
 
     while (new_window.check_open() == true){
 

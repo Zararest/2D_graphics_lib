@@ -625,6 +625,22 @@ Vector operator * (float number, const Vector& vectr){
     return tmp;
 }
 
+Vector operator * (Matrix& matr, Vector& vectr){
+
+    Vector tmp(0, -1);
+    dynamic_cast<Matrix&>(tmp) = matr * dynamic_cast<Matrix&>(vectr);
+
+    return tmp;
+}
+
+Vector operator * (Vector& vectr, Matrix& matr){
+
+    Vector tmp(0, -1);
+    dynamic_cast<Matrix&>(tmp) = dynamic_cast<Matrix&>(vectr) * matr;
+
+    return tmp;
+}
+
 Vector operator + (const Vector& L_vectr, const Vector& R_vectr){
 
     printf("vector + vector\n");

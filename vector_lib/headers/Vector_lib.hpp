@@ -108,6 +108,10 @@ public:
     friend Vector operator * (const Vector& vectr, float number);
 
     friend Vector operator * (float number, const Vector& vectr);
+
+    friend Vector operator * (Matrix& matr, Vector& vectr);
+
+    friend Vector operator * (Vector& vectr, Matrix& matr);
  
     friend Vector operator + (const Vector& L_vectr, const Vector& R_vectr);         //если не совпадают размеры, то ассерт
 
